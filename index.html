@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LuxeMart | Luxury Clothes & Home</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header><div class="nav wrap"><a class="logo" href="#">Luxe<span>Mart</span></a>
+<button class="menu" id="menuBtn">☰</button><nav id="nav"><a href="#shop">Shop</a><a href="#categories">Categories</a><a href="#sell">Sell With Us</a><a href="#about">About</a><a href="#contact">Contact</a><button class="cartBtn" id="cartBtn">Cart <b id="cartCount">0</b></button></nav></div></header>
+<main>
+<section class="hero"><div class="wrap heroGrid"><div><p class="eyebrow">CURATED • ELEGANT • EVERYDAY</p><h1>Luxury finds<br>for your life.</h1><p class="lead">Discover refined clothing and beautiful home products from independent sellers.</p><a class="btn" href="#shop">Shop Collection</a></div><div class="heroCard"><div>LM</div></div></div></section>
+<section id="shop" class="section wrap"><div class="sectionHead"><div><p class="eyebrow">COLLECTION</p><h2>Shop products</h2></div><input id="search" class="search" placeholder="Search products..."></div>
+<div class="filters"><button class="active" data-cat="all">All</button><button data-cat="Clothes">Clothes</button><button data-cat="Home">Home</button></div>
+<div id="products" class="grid"></div><p id="empty" class="empty hidden">No products found.</p></section>
+<section id="categories" class="section wrap"><div class="categoryGrid"><a href="#shop" data-jump="Clothes"><span>01</span><h3>Wardrobe</h3><p>Elevated clothing for every occasion.</p></a><a href="#shop" data-jump="Home"><span>02</span><h3>Home Edit</h3><p>Beautiful pieces for a more refined home.</p></a></div></section>
+<section id="sell" class="section sell"><div class="wrap"><p class="eyebrow">SELL WITH LUXEMART</p><h2>Turn your products into a storefront.</h2><p>List your clothing and home products and reach customers through LuxeMart.</p><a class="btn light" href="#contact">Become a seller</a></div></section>
+<section id="about" class="section wrap two"><div><p class="eyebrow">ABOUT</p><h2>Made for modern shopping.</h2></div><p>LuxeMart brings fashion and home products together in a simple marketplace experience. Customers can browse, add items to a cart and place delivery orders.</p></section>
+<section id="contact" class="section wrap contact"><p class="eyebrow">CONTACT</p><h2>Need help?</h2><p>Replace this section with your business phone, WhatsApp and email in <b>config.js</b>.</p></section>
+</main>
+<footer><div class="wrap">© <span id="year"></span> LuxeMart. All rights reserved. <a href="admin.html">Admin</a></div></footer>
+<div id="toast" class="toast"></div>
+<aside id="cart" class="drawer"><div class="drawerHead"><h2>Your Cart</h2><button id="closeCart">×</button></div><div id="cartItems"></div><div class="total"><span>Total</span><strong id="cartTotal">Rs 0</strong></div><button class="btn full" id="checkoutBtn">Checkout</button></aside>
+<div id="modal" class="modal hidden"><div class="modalBox"><button class="close" id="closeModal">×</button><h2>Place your order</h2><p class="muted">We'll use these details for delivery.</p>
+<form id="orderForm"><input name="name" required placeholder="Full name"><input name="phone" required placeholder="Phone / WhatsApp"><textarea name="address" required placeholder="Delivery address"></textarea><textarea name="notes" placeholder="Order notes (optional)"></textarea><button class="btn full" type="submit">Place Order</button></form><p id="orderMsg" class="msg"></p></div></div>
+<script src="config.js"></script><script src="app.js"></script>
+</body></html>

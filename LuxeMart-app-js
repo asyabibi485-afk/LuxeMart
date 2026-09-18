@@ -1,0 +1,396 @@
+// LuxeMart customer storefront
+// Requires Supabase JS to be loaded before this file and config.js to be loaded first.
+
+const cfg = window.LUXEMART_CONFIG || {};
+const hasSupabaseConfig =
+  cfg.SUPABASE_URL &&
+  cfg.SUPABASE_ANON_KEY &&
+  !cfg.SUPABASE_URL.includes("YOUR_") &&
+  !cfg.SUPABASE_ANON_KEY.includes("YOUR_");
+
+let supabaseClient = null;
+if (hasSupabaseConfig && window.supabase) {
+  supabaseClient = window.supabase.createClient(
+    cfg.SUPABASE_URL,
+    cfg.SUPABASE_ANON_KEY
+  );
+}
+
+const demoProducts = [
+  {
+    id: "demo-1",
+    name: "Classic Linen Set",
+    description: "Elegant premium linen outfit.",
+    price: 8500,
+    category: "Clothes",
+    image_url: "",
+    active: true
+  },
+  {
+    id: "demo-2",
+    name: "Signature Evening Dress",
+    description: "Luxury evening dress.",
+    price: 12900,
+    category: "Clothes",
+    image_url: "",
+    active: true
+  },
+  {
+    id: "demo-3",
+    name: "Minimal Ceramic Vase",
+    description: "Modern luxury home decoration.",
+    price: 4200,
+    category: "Home",
+    image_url: "",
+    active: true
+  },
+  {
+    id: "demo-4",
+    name: "Soft Luxe Cushion Set",
+    description: "Premium decorative cushion set.",
+    price: 3800,
+    category: "Home",
+    image_url: "",
+    active: true
+  }
+];
+
+let products = [];
+let cart = JSON.parse(localStorage.getItem("luxemart_cart") || "[]");
+let selectedCategory = "All";
+
+const $ = (selector) => document.querySelector(selector);
+
+function money(value) {
+  return `Rs. ${Number(value || 0).toLocaleString("en-PK")}`;
+}
+
+function saveCart() {
+  localStorage.setItem("luxemart_cart", JSON.stringify(cart));
+  renderCart();
+}
+
+async function loadProducts() {
+  if (!supabaseClient) {
+    products = demoProducts;
+    renderProducts();
+    return;
+  }
+
+  const { data, error } = await supabaseClient
+    .from("products")
+    .select("*")
+    .eq("active", true)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Supabase products error:", error);
+    products = demoProducts;
+  } else {
+    products = data || [];
+  }
+
+  renderProducts();
+}
+
+function filteredProducts() {
+  const search = ($("#productSearch")?.value || "").trim().toLowerCase();
+
+  return products.filter((product) => {
+    const categoryMatch =
+      selectedCategory === "All" || product.category === selectedCategory;
+
+    const text = `${product.name || ""} ${product.description || ""}`.toLowerCase();
+    const searchMatch = !search || text.includes(search);
+
+    return categoryMatch && searchMatch;
+  });
+}
+
+function renderProducts() {
+  const grid = $("#productGrid");
+  if (!grid) return;
+
+  const items = filteredProducts();
+
+  if (!items.length) {
+    grid.innerHTML = `<div class="empty-state">No products found.</div>`;
+    return;
+  }
+
+  grid.innerHTML = items
+    .map(
+      (product) => `
+        <article class="product-card">
+          <div class="product-image">
+            ${
+              product.image_url
+                ? `<img src="${escapeHtml(product.image_url)}" alt="${escapeHtml(product.name)}" loading="lazy">`
+                : `<div class="image-placeholder">${escapeHtml(product.category)}</div>`
+            }
+          </div>
+          <div class="product-info">
+            <span class="product-category">${escapeHtml(product.category)}</span>
+            <h3>${escapeHtml(product.name)}</h3>
+            <p>${escapeHtml(product.description || "")}</p>
+            <div class="product-bottom">
+              <strong>${money(product.price)}</strong>
+              <button class="btn btn-dark" type="button" onclick="addToCart('${product.id}')">
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+window.addToCart = function (productId) {
+  const product = products.find((item) => String(item.id) === String(productId));
+  if (!product) return;
+
+  const existing = cart.find(
+    (item) => String(item.id) === String(productId)
+  );
+
+  if (existing) {
+    existing.quantity += 1;
+  } else {
+    cart.push({
+      id: product.id,
+      name: product.name,
+      price: Number(product.price),
+      quantity: 1
+    });
+  }
+
+  saveCart();
+  openCart();
+};
+
+window.changeQuantity = function (productId, amount) {
+  const item = cart.find((cartItem) => String(cartItem.id) === String(productId));
+  if (!item) return;
+
+  item.quantity += amount;
+
+  if (item.quantity <= 0) {
+    cart = cart.filter(
+      (cartItem) => String(cartItem.id) !== String(productId)
+    );
+  }
+
+  saveCart();
+};
+
+window.removeFromCart = function (productId) {
+  cart = cart.filter(
+    (cartItem) => String(cartItem.id) !== String(productId)
+  );
+  saveCart();
+};
+
+function cartTotal() {
+  return cart.reduce(
+    (total, item) => total + Number(item.price) * Number(item.quantity),
+    0
+  );
+}
+
+function renderCart() {
+  const container = $("#cartItems");
+  const total = $("#cartTotal");
+  const count = $("#cartCount");
+
+  if (count) {
+    count.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+  }
+
+  if (total) total.textContent = money(cartTotal());
+
+  if (!container) return;
+
+  if (!cart.length) {
+    container.innerHTML = `<div class="empty-state">Your cart is empty.</div>`;
+    return;
+  }
+
+  container.innerHTML = cart
+    .map(
+      (item) => `
+        <div class="cart-item">
+          <div>
+            <strong>${escapeHtml(item.name)}</strong>
+            <div>${money(item.price)}</div>
+          </div>
+          <div class="cart-controls">
+            <button type="button" onclick="changeQuantity('${item.id}', -1)">−</button>
+            <span>${item.quantity}</span>
+            <button type="button" onclick="changeQuantity('${item.id}', 1)">+</button>
+            <button type="button" onclick="removeFromCart('${item.id}')">×</button>
+          </div>
+        </div>
+      `
+    )
+    .join("");
+}
+
+function openCart() {
+  $("#cartDrawer")?.classList.add("open");
+}
+
+function closeCart() {
+  $("#cartDrawer")?.classList.remove("open");
+}
+
+function openCheckout() {
+  if (!cart.length) {
+    alert("Your cart is empty.");
+    return;
+  }
+
+  closeCart();
+  $("#checkoutModal")?.classList.add("open");
+}
+
+function closeCheckout() {
+  $("#checkoutModal")?.classList.remove("open");
+}
+
+async function placeOrder(event) {
+  event.preventDefault();
+
+  if (!cart.length) {
+    alert("Your cart is empty.");
+    return;
+  }
+
+  const form = event.currentTarget;
+  const customerName = $("#customerName")?.value.trim();
+  const phone = $("#customerPhone")?.value.trim();
+  const address = $("#customerAddress")?.value.trim();
+  const notes = $("#customerNotes")?.value.trim() || "";
+
+  if (!customerName || !phone || !address) {
+    alert("Please fill in your name, phone and address.");
+    return;
+  }
+
+  const total = cartTotal();
+  const submitButton = form.querySelector("button[type='submit']");
+  if (submitButton) submitButton.disabled = true;
+
+  try {
+    if (!supabaseClient) {
+      alert(
+        "Supabase is not connected. Please check config.js before placing real orders."
+      );
+      return;
+    }
+
+    const { data: order, error: orderError } = await supabaseClient
+      .from("orders")
+      .insert({
+        customer_name: customerName,
+        phone,
+        address,
+        notes,
+        total,
+        status: "pending"
+      })
+      .select()
+      .single();
+
+    if (orderError) throw orderError;
+
+    const orderItems = cart.map((item) => ({
+      order_id: order.id,
+      product_id: String(item.id).startsWith("demo-") ? null : item.id,
+      product_name: item.name,
+      quantity: item.quantity,
+      unit_price: item.price
+    }));
+
+    const { error: itemsError } = await supabaseClient
+      .from("order_items")
+      .insert(orderItems);
+
+    if (itemsError) throw itemsError;
+
+    const whatsapp = String(cfg.WHATSAPP_NUMBER || "").replace(/\D/g, "");
+
+    cart = [];
+    saveCart();
+    form.reset();
+    closeCheckout();
+
+    alert(`Order placed successfully!\nOrder ID: ${order.id}`);
+
+    if (whatsapp) {
+      const message = [
+        "New LuxeMart Order",
+        `Order ID: ${order.id}`,
+        `Customer: ${customerName}`,
+        `Phone: ${phone}`,
+        `Address: ${address}`,
+        `Total: ${money(total)}`
+      ].join("\n");
+
+      window.open(
+        `https://wa.me/${whatsapp}?text=${encodeURIComponent(message)}`,
+        "_blank"
+      );
+    }
+  } catch (error) {
+    console.error("Order error:", error);
+    alert("Sorry, the order could not be placed. Please try again.");
+  } finally {
+    if (submitButton) submitButton.disabled = false;
+  }
+}
+
+function setupEvents() {
+  $("#productSearch")?.addEventListener("input", renderProducts);
+
+  document.querySelectorAll("[data-category]").forEach((button) => {
+    button.addEventListener("click", () => {
+      selectedCategory = button.dataset.category || "All";
+
+      document.querySelectorAll("[data-category]").forEach((item) => {
+        item.classList.toggle("active", item === button);
+      });
+
+      renderProducts();
+    });
+  });
+
+  $("#cartButton")?.addEventListener("click", openCart);
+  $("#closeCart")?.addEventListener("click", closeCart);
+  $("#checkoutButton")?.addEventListener("click", openCheckout);
+  $("#closeCheckout")?.addEventListener("click", closeCheckout);
+  $("#checkoutForm")?.addEventListener("submit", placeOrder);
+
+  $("#cartDrawer")?.addEventListener("click", (event) => {
+    if (event.target === event.currentTarget) closeCart();
+  });
+
+  $("#checkoutModal")?.addEventListener("click", (event) => {
+    if (event.target === event.currentTarget) closeCheckout();
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupEvents();
+  renderCart();
+  loadProducts();
+});
