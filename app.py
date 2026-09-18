@@ -200,7 +200,6 @@ def navigate(page_name):
 # ============================================================
 # CSS
 # ============================================================
-
 st.markdown(
     """
     <style>
@@ -209,13 +208,12 @@ st.markdown(
         'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@500;600;700&display=swap'
     );
 
+    /* =========================
+       MAIN APP BACKGROUND
+       ========================= */
+
     .stApp {
-        background: linear-gradient(
-            135deg,
-            #ffffff 0%,
-            #faf8ff 50%,
-            #f0eafa 100%
-        );
+        background: #ffffff !important;
     }
 
     .block-container {
@@ -223,6 +221,10 @@ st.markdown(
         padding-top: 1.2rem;
         padding-bottom: 3rem;
     }
+
+    /* =========================
+       NORMAL TEXT
+       ========================= */
 
     .stApp p,
     .stApp span,
@@ -232,28 +234,41 @@ st.markdown(
         font-weight: 600 !important;
     }
 
+    /* =========================
+       HEADINGS
+       ========================= */
+
     h1,
     h2,
-    h3 {
+    h3,
+    h4 {
         color: #000000 !important;
         font-family: "Playfair Display", serif !important;
         font-weight: 700 !important;
     }
+
+    /* =========================
+       BRAND
+       ========================= */
 
     .brand {
         font-family: "Playfair Display", serif;
         font-size: 36px;
         font-weight: 700;
         letter-spacing: 4px;
-        color: #000000;
+        color: #000000 !important;
     }
 
     .tagline {
-        color: #000000;
+        color: #000000 !important;
         font-size: 12px;
         font-weight: 700;
         letter-spacing: 2px;
     }
+
+    /* =========================
+       HERO
+       ========================= */
 
     .hero-box {
         padding: 38px;
@@ -267,6 +282,10 @@ st.markdown(
         border: 1px solid #e5dcef;
         box-shadow: 0 15px 45px rgba(50, 40, 65, 0.08);
     }
+
+    /* =========================
+       PRODUCT CARD
+       ========================= */
 
     .product-card {
         padding: 10px;
@@ -291,6 +310,10 @@ st.markdown(
         font-size: 65px;
     }
 
+    /* =========================
+       BUTTONS
+       ========================= */
+
     div.stButton > button {
         background: #f5efff !important;
         color: #000000 !important;
@@ -303,18 +326,119 @@ st.markdown(
     div.stButton > button:hover {
         background: #e9def7 !important;
         color: #000000 !important;
+        border-color: #cbb8e2 !important;
     }
 
-    input,
-    textarea {
+    /* =========================
+       TEXT INPUT
+       WHITE BACKGROUND
+       BLACK TEXT
+       ========================= */
+
+    input {
+        background-color: #ffffff !important;
         color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+        border: 1px solid #d8cae8 !important;
+        border-radius: 12px !important;
         font-weight: 600 !important;
+    }
+
+    input:focus {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+        border-color: #b99bd8 !important;
+        box-shadow: 0 0 0 1px #b99bd8 !important;
+    }
+
+    /* =========================
+       TEXTAREA
+       ========================= */
+
+    textarea {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+        border: 1px solid #d8cae8 !important;
+        border-radius: 12px !important;
+        font-weight: 600 !important;
+    }
+
+    textarea:focus {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+        border-color: #b99bd8 !important;
+        box-shadow: 0 0 0 1px #b99bd8 !important;
+    }
+
+    /* =========================
+       PLACEHOLDER TEXT
+       ========================= */
+
+    input::placeholder,
+    textarea::placeholder {
+        color: #777777 !important;
+        -webkit-text-fill-color: #777777 !important;
+        opacity: 1 !important;
+    }
+
+    /* =========================
+       SELECT BOX
+       ========================= */
+
+    div[data-baseweb="select"] > div {
+        background-color: #ffffff !important;
+        border: 1px solid #d8cae8 !important;
+        border-radius: 12px !important;
     }
 
     div[data-baseweb="select"] * {
         color: #000000 !important;
         font-weight: 600 !important;
     }
+
+    /* =========================
+       SELECT MENU
+       ========================= */
+
+    div[role="listbox"] {
+        background-color: #ffffff !important;
+    }
+
+    div[role="option"] {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+    }
+
+    div[role="option"]:hover {
+        background-color: #f5efff !important;
+        color: #000000 !important;
+    }
+
+    /* =========================
+       NUMBER INPUT
+       ========================= */
+
+    div[data-testid="stNumberInput"] input {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+    }
+
+    /* =========================
+       CHECKBOX
+       ========================= */
+
+    div[data-testid="stCheckbox"] label {
+        color: #000000 !important;
+        font-weight: 600 !important;
+    }
+
+    /* =========================
+       FOOTER
+       ========================= */
 
     .footer {
         text-align: center;
@@ -333,202 +457,8 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-
-# ============================================================
-# HEADER
-# ============================================================
-
-left, right = st.columns([2, 5])
-
-with left:
-    st.markdown(
-        '<div class="brand">LUXEMART</div>',
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
-        '<div class="tagline">LUXURY • STYLE • ELEGANCE</div>',
-        unsafe_allow_html=True,
-    )
-
-with right:
-    b1, b2, b3, b4, b5 = st.columns(5)
-
-    with b1:
-        if st.button("Shop", use_container_width=True):
-            navigate("Shop")
-
-    with b2:
-        if st.button("♡ Favorites", use_container_width=True):
-            navigate("Favorites")
-
-    with b3:
-        if st.button(
-            f"🛍 Cart ({len(st.session_state.cart)})",
-            use_container_width=True,
-        ):
-            navigate("Cart")
-
-    with b4:
-        if st.button("About", use_container_width=True):
-            navigate("About")
-
-    with b5:
-        if st.button("Admin", use_container_width=True):
-            navigate("Admin")
-
-
-st.divider()
-
-
-# ============================================================
-# SHOP
-# ============================================================
-
-if st.session_state.page == "Shop":
-
-    st.markdown(
-        '<div class="hero-box">',
-        unsafe_allow_html=True,
-    )
-
-    st.markdown("**PREMIUM COLLECTION**")
-
-    st.title("Discover Your Signature Style.")
-
-    st.write(
-        "Explore our carefully selected collection of fashion, "
-        "jewellery, accessories, beauty products, clothes and "
-        "luxury fragrances."
-    )
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    search = st.text_input(
-        "🔎 Search Products",
-        placeholder="Search handbag, abaya, perfume, jewellery...",
-    )
-
-    categories = [
-        "All",
-        "Clothes",
-        "Fashion",
-        "Jewellery",
-        "Accessories",
-        "Perfume",
-        "Beauty",
-    ]
-
-    selected_category = st.selectbox(
-        "Category",
-        categories,
-    )
-
-    products = PRODUCTS
-
-    if selected_category != "All":
-        products = [
-            product
-            for product in products
-            if product["category"] == selected_category
-        ]
-
-    if search.strip():
-        search_text = search.lower().strip()
-
-        products = [
-            product
-            for product in products
-            if search_text in product["name"].lower()
-            or search_text in product["category"].lower()
-            or search_text in product["description"].lower()
-        ]
-
-    if not products:
-        st.warning("No products found.")
-
-    else:
-        for start in range(0, len(products), 3):
-
-            row = products[start:start + 3]
-
-            columns = st.columns(3)
-
-            for index, product in enumerate(row):
-
-                with columns[index]:
-
-                    st.markdown(
-                        '<div class="product-card">',
-                        unsafe_allow_html=True,
-                    )
-
-                    st.markdown(
-                        f"""
-                        <div class="product-image">
-                            {product["icon"]}
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-
-                    st.markdown(
-                        "</div>",
-                        unsafe_allow_html=True,
-                    )
-
-                    st.caption(product["category"])
-
-                    st.subheader(product["name"])
-
-                    st.write(product["description"])
-
-                    st.markdown(
-                        f"**{money(product['price'])}**"
-                    )
-
-                    c1, c2 = st.columns(2)
-
-                    with c1:
-
-                        if product["id"] in st.session_state.favorites:
-                            favorite_text = "♥ Saved"
-                        else:
-                            favorite_text = "♡ Favorite"
-
-                        if st.button(
-                            favorite_text,
-                            key=f"favorite_{product['id']}",
-                            use_container_width=True,
-                        ):
-
-                            if product["id"] in st.session_state.favorites:
-                                st.session_state.favorites.remove(
-                                    product["id"]
-                                )
-                            else:
-                                st.session_state.favorites.append(
-                                    product["id"]
-                                )
-
-                            st.rerun()
-
-                    with c2:
-
-                        if st.button(
-                            "🛍 Add",
-                            key=f"add_{product['id']}",
-                            use_container_width=True,
-                        ):
-
-                            st.session_state.cart.append(
-                                product["id"]
-                            )
-
-                            st.toast(
-                                f"{product['name']} added to cart!"
-                            )
+        
+                                            
 
 
 # ============================================================
