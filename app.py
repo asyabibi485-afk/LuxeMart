@@ -187,6 +187,71 @@ div[data-testid="stSelectbox"] div[data-baseweb="select"] > div {
   .hero-card {min-height:220px;margin-top:1rem;}
   .product-img {height:185px;}
 }
+
+/* Strong text contrast fix for Streamlit */
+.stApp, .stApp * {
+  color: #171717;
+}
+.stApp [data-testid="stMarkdownContainer"] p,
+.stApp [data-testid="stMarkdownContainer"] li,
+.stApp [data-testid="stMarkdownContainer"] strong,
+.stApp [data-testid="stMarkdownContainer"] span {
+  color: #171717 !important;
+}
+.stApp [data-testid="stWidgetLabel"] p,
+.stApp [data-testid="stWidgetLabel"] span,
+.stApp label,
+.stApp label p {
+  color: #171717 !important;
+}
+.stApp [role="radiogroup"] label,
+.stApp [role="radiogroup"] label p,
+.stApp [role="radiogroup"] label span {
+  color: #171717 !important;
+  opacity: 1 !important;
+}
+.stApp button,
+.stApp button p,
+.stApp button span {
+  color: #171717 !important;
+}
+.stApp div.stButton > button,
+.stApp div[data-testid="stFormSubmitButton"] > button {
+  color: #ffffff !important;
+}
+.stApp input,
+.stApp textarea,
+.stApp select,
+.stApp [data-baseweb="select"] *,
+.stApp [data-baseweb="input"] * {
+  color: #171717 !important;
+}
+.stApp input::placeholder,
+.stApp textarea::placeholder {
+  color: #777066 !important;
+  opacity: 1 !important;
+}
+.stApp [data-testid="stMetricLabel"],
+.stApp [data-testid="stMetricValue"],
+.stApp [data-testid="stMetricDelta"] {
+  color: #171717 !important;
+}
+.stApp [data-baseweb="tab-list"] button,
+.stApp [data-baseweb="tab-list"] button p {
+  color: #171717 !important;
+  opacity: 1 !important;
+}
+.stApp [data-testid="stExpander"] summary,
+.stApp [data-testid="stExpander"] summary * {
+  color: #171717 !important;
+}
+.stApp [data-testid="stAlert"] p {
+  color: inherit !important;
+}
+
+
+a { color:#171717 !important; font-weight:600; text-decoration:underline; }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -238,7 +303,7 @@ def product_image(p):
 # -----------------------------
 top_left, top_right = st.columns([5,1])
 with top_left:
-    st.markdown('<div class="brand">LuxeMart</div>', unsafe_allow_html=True)
+    st.markdown('<div class="brand" style="color:#171717 !important;">LuxeMart</div>', unsafe_allow_html=True)
     st.markdown('<div style="color:#7b7368;margin-top:.35rem;">CURATED • ELEGANT • EVERYDAY</div>', unsafe_allow_html=True)
 with top_right:
     st.metric("Cart", sum(st.session_state.cart.values()))
@@ -448,8 +513,8 @@ elif page == "Contact":
         <div class="info-card">
           <h3>Customer support</h3>
           <p>For orders, product questions and seller enquiries, contact your LuxeMart business team.</p>
-          <p><strong>Phone / WhatsApp:</strong> Add your number</p>
-          <p><strong>Email:</strong> Add your email</p>
+          <p><strong>Phone / WhatsApp:</strong> <a href="tel:+923220956920">03220956920</a></p>
+          <p><strong>Email:</strong> <a href="mailto:asyabibi485@gmail.com">asyabibi485@gmail.com</a></p>
         </div>
         """, unsafe_allow_html=True)
     with b:
