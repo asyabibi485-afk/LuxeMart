@@ -252,6 +252,55 @@ div[data-testid="stSelectbox"] div[data-baseweb="select"] > div {
 
 a { color:#171717 !important; font-weight:600; text-decoration:underline; }
 
+
+/* Luxury font color palette */
+.stApp, .stApp * {
+  color: #30251f;
+}
+.stApp [data-testid="stMarkdownContainer"] p,
+.stApp [data-testid="stMarkdownContainer"] li,
+.stApp [data-testid="stMarkdownContainer"] strong,
+.stApp [data-testid="stMarkdownContainer"] span,
+.stApp [data-testid="stWidgetLabel"] p,
+.stApp [data-testid="stWidgetLabel"] span,
+.stApp label,
+.stApp label p {
+  color: #30251f !important;
+}
+.brand,
+.hero h1,
+.section-title,
+.product-name,
+.info-card h3 {
+  color: #241a16 !important;
+}
+.kicker, .pill {
+  color: #8a6840 !important;
+}
+.hero p, .product-desc, .footer {
+  color: #665a51 !important;
+}
+.stApp input, .stApp textarea, .stApp [data-baseweb="select"] * {
+  color: #30251f !important;
+}
+.stApp input::placeholder, .stApp textarea::placeholder {
+  color: #887d73 !important;
+}
+.stApp [role="radiogroup"] label,
+.stApp [role="radiogroup"] label p,
+.stApp [role="radiogroup"] label span,
+.stApp [data-baseweb="tab-list"] button,
+.stApp [data-baseweb="tab-list"] button p {
+  color: #30251f !important;
+}
+.stApp div.stButton > button,
+.stApp div[data-testid="stFormSubmitButton"] > button {
+  color: #fffaf2 !important;
+}
+a {
+  color: #765532 !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
