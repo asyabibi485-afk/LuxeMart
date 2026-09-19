@@ -1944,7 +1944,7 @@ elif st.session_state.page == "Contact":
 # ADMIN
 # ============================================================
 
-elif st.session_state.page == "Admin":
+elif st.session_state.page == "Admin"),:,
 
     st.header(
         "🔐 Admin Dashboard"
