@@ -1460,108 +1460,77 @@ if st.session_state.page == "Shop":
 
 elif st.session_state.page == "Favorites":
 
-    st.header(
-        "❤️ My Favorites"
-    )
+    st.header("❤️ My Favorites")
 
     favorite_products = []
 
     for product_id in st.session_state.favorites:
-
-        product = get_product(
-            product_id
-        )
+        product = get_product(product_id)
 
         if product:
-
-            favorite_products.append(
-                product
-            )
+            favorite_products.append(product)
 
     if not favorite_products:
 
-        st.info(
-            "You have no favorite products yet."
-        )
+        st.info("You have no favorite products yet.")
 
         if st.button(
             "🛍️ CONTINUE SHOPPING",
             use_container_width=True,
-            key="favorite_shop"
+            key="favorite_shop",
         ):
-
             go_to("Shop")
 
     else:
 
         columns = st.columns(4)
 
-        for index, product in enumerate(
-            favorite_products
-        ):
+        for index, product in enumerate(favorite_products):
 
             with columns[index % 4]:
 
-                safe_image(
-                    product["image"]
-                )
+                safe_image(product["image"])
 
-                st.subheader(
-                    product["name"]
-                )
-
-                st.caption(
-                    product["category"]
-                )
-
-                st.write(
-                    f"**{money(product['price'])}**"
-                )
+                st.subheader(product["name"])
+                st.caption(product["category"])
+                st.write(f"**{money(product['price'])}**")
 
                 if st.button(
                     "🛒 ADD TO CART",
-                    key=f"fav_cart_{product['id']}",
-                    use_container_width=True
+                    key=f"favorite_cart_{product['id']}",
+                    use_container_width=True,
                 ):
-
-                    add_to_cart(
-                        product["id"]
-                    )
-
+                    add_to_cart(product["id"])
                     st.rerun()
 
                 if st.button(
                     "REMOVE ❤️",
-                    key=f"remove_fav_{product['id']}",
-                    use_container_width=True
+                    key=f"remove_favorite_{product['id']}",
+                    use_container_width=True,
                 ):
-
                     st.session_state.favorites.remove(
                         product["id"]
                     )
+                    st.rerun()
 
-       # ============================================================
+
+# ============================================================
 # CART
 # ============================================================
 
 elif st.session_state.page == "Cart":
 
-    st.header(
-        "🛒 Shopping Cart"
-    )
+    st.header("🛒 Shopping Cart")
 
     if not st.session_state.cart:
 
-        st.info(
-            "Your cart is empty."
-        )
+        st.info("Your cart is empty.")
 
         if st.button(
             "🛍️ CONTINUE SHOPPING",
             use_container_width=True,
-            key="empty_cart_shop"
+            key="empty_cart_shop",
         ):
-
             go_to("Shop")
 
     else:
@@ -1570,279 +1539,60 @@ elif st.session_state.page == "Cart":
             list(st.session_state.cart)
         ):
 
-            product = get_product(
-                product_id
-            )
+            product = get_product(product_id)
 
             if not product:
                 continue
 
-            col1, col2, col3 = st.columns(
-                [5, 2, 1]
-            )
+            col1, col2, col3 = st.columns([5, 2, 1])
 
             with col1:
-
-                st.write(
-                    f"🛍️ **{product['name']}**"
-                )
-
-                st.caption(
-                    product["category"]
-                )
+                st.write(f"🛍️ **{product['name']}**")
+                st.caption(product["category"])
 
             with col2:
-
-                st.write(
-                    money(product["price"])
-                )
+                st.write(money(product["price"]))
 
             with col3:
 
                 if st.button(
                     "REMOVE",
-                    key=f"remove_cart_{index}"
+                    key=f"remove_cart_{index}",
                 ):
-
-                    st.session_state.cart.pop(
-                        index
-                    )
-
+                    st.session_state.cart.pop(index)
                     st.rerun()
 
         st.divider()
 
         total = cart_total()
 
-        st.subheader(
-            f"Total: {money(total)}"
-        )
+        st.subheader(f"Total: {money(total)}")
 
-        st.divider()
 
-        st.subheader(
-            "📦 Customer Information"
-        )
-
-        customer_name = st.text_input(
-            "Full Name",
-            placeholder="Enter your full name",
-            key="customer_name"
-        )
-
-        customer_phone = st.text_input(
-            "Phone Number",
-            placeholder="03XXXXXXXXX",
-            key="customer_phone"
-        )
-
-        customer_address = st.text_area(
-            "Delivery Address",
-            placeholder="Enter complete delivery address",
-            key="customer_address"
-        )
-
-        if st.button(
-            "🎉 PLACE ORDER",
-            use_container_width=True,
-            key="place_order"
-        ):
-
-            if not customer_name.strip():
-
-                st.error(
-                    "Please enter your name."
-                )
-
-            elif not customer_phone.strip():
-
-                st.error(
-                    "Please enter your phone number."
-                )
-
-            elif not customer_address.strip():
-
-                st.error(
-                    "Please enter your delivery address."
-                )
-
-            else:
-
-                try:
-
-                    order_data = {
-                        "customer_name":
-                            customer_name.strip(),
-
-                        "customer_phone":
-                            customer_phone.strip(),
-
-                        "customer_address":
-                            customer_address.strip(),
-
-                        "total_amount":
-                            total
-                    }
-
-                    order_response = (
-                        supabase
-                        .table("orders")
-                        .insert(order_data)
-                        .execute()
-                    )
-
-                    if not order_response.data:
-
-                        raise Exception(
-                            "Order was not created."
-                        )
-
-                    order_id = (
-                        order_response
-                        .data[0]
-                        .get("id")
-                    )
-
-                    for product_id in (
-                        st.session_state.cart
-                    ):
-
-                        product = get_product(
-                            product_id
-                        )
-
-                        if product:
-
-                            item_data = {
-                                "order_id":
-                                    order_id,
-
-                                "product_name":
-                                    product["name"],
-
-                                "price":
-                                    product["price"],
-
-                                "quantity":
-                                    1
-                            }
-
-                            (
-                                supabase
-                                .table("order_items")
-                                .insert(item_data)
-                                .execute()
-                            )
-
-                    st.session_state.cart = []
-
-                    st.success(
-                        "🎉 Order placed successfully!"
-                    )
-
-                    st.info(
-                        f"Order ID: {order_id}"
-                    )
-
-                    st.balloons()
-
-                except Exception as e:
-
-                    st.error(
-                        "Unable to place order."
-                    )
-
-                    st.code(
-                        str(e)
-                    )
-st.rerun()
 # ============================================================
 # ABOUT
 # ============================================================
 
 elif st.session_state.page == "About":
 
-    st.header(
-        "ℹ️ About LuxeMart"
-    )
+    st.header("ℹ️ About LuxeMart")
 
-    st.subheader(
-        "Luxury • Style • Elegance"
-    )
+    st.subheader("Luxury • Style • Elegance")
 
     st.write(
         "LuxeMart is a modern online shopping experience "
-        "for fashion, abayas, jewellery, bags, watches, "
-        "perfumes, beauty and lifestyle essentials."
+        "for fashion, beauty, jewellery, perfumes, accessories "
+        "and elegant lifestyle products."
     )
 
     st.divider()
 
-    about_columns = st.columns(3)
-
-    with about_columns[0]:
-
-        st.subheader(
-            "👗 Fashion"
-        )
-
-        st.write(
-            "Elegant clothing and Pakistani fashion."
-        )
-
-    with about_columns[1]:
-
-        st.subheader(
-            "💎 Jewellery"
-        )
-
-        st.write(
-            "Necklaces, bracelets and accessories."
-        )
-
-    with about_columns[2]:
-
-        st.subheader(
-            "🌸 Beauty"
-        )
-
-        st.write(
-            "Perfumes and beauty essentials."
-        )
-
-    st.divider()
-
-    st.subheader(
-        "🛍️ Shopping Features"
-    )
-
-    st.write(
-        "✓ Product search"
-    )
-
-    st.write(
-        "✓ Category filters"
-    )
-
-    st.write(
-        "✓ 20 collection pages"
-    )
-
-    st.write(
-        "✓ Favorites"
-    )
-
-    st.write(
-        "✓ Shopping cart"
-    )
-
-    st.write(
-        "✓ Customer checkout"
-    )
-
-    st.write(
-        "✓ Supabase order storage"
-    )
+    st.write("✨ Fashion")
+    st.write("💎 Jewellery")
+    st.write("👜 Accessories")
+    st.write("🌸 Perfumes")
+    st.write("💄 Beauty")
+    st.write("👗 Clothes")
 
 
 # ============================================================
@@ -1851,83 +1601,55 @@ elif st.session_state.page == "About":
 
 elif st.session_state.page == "Contact":
 
-    st.header(
-        "📞 Contact LuxeMart"
-    )
+    st.header("📞 Contact LuxeMart")
 
-    st.write(
-        "We are happy to hear from you."
-    )
+    st.write("We are happy to hear from you.")
 
     st.divider()
 
-    contact_left, contact_right = st.columns(2)
+    contact_col1, contact_col2 = st.columns(2)
 
-    with contact_left:
+    with contact_col1:
 
-        st.subheader(
-            "📞 Phone"
-        )
+        st.subheader("📞 Phone")
+        st.write("03169707804")
 
-        st.write(
-            "03169707804"
-        )
+        st.subheader("📧 Email")
+        st.write("asyabibi485@gmail.com")
 
-        st.subheader(
-            "📧 Email"
-        )
+    with contact_col2:
 
-        st.write(
-            "asyabibi485@gmail.com"
-        )
-
-        st.subheader(
-            "🛍️ Store"
-        )
-
-        st.write(
-            "LuxeMart"
-        )
-
-    with contact_right:
-
-        st.subheader(
-            "💬 Send a Message"
-        )
+        st.subheader("💬 Send a Message")
 
         contact_name = st.text_input(
             "Your Name",
-            key="contact_name"
+            key="contact_name",
         )
 
         contact_phone = st.text_input(
             "Your Phone",
-            key="contact_phone"
+            key="contact_phone",
         )
 
         contact_message = st.text_area(
             "Your Message",
             placeholder="Write your message here...",
-            key="contact_message"
+            key="contact_message",
         )
 
         if st.button(
             "SEND MESSAGE",
             use_container_width=True,
-            key="send_contact"
+            key="send_contact",
         ):
 
             if not contact_name.strip():
 
-                st.error(
-                    "Please enter your name."
-                )
+                st.error("Please enter your name.")
 
             elif not contact_message.strip():
 
-                st.error(
-                    "Please enter your message."
-                )
+                st.error("Please enter your message.")
 
             else:
 
@@ -1935,20 +1657,14 @@ elif st.session_state.page == "Contact":
                     "Thank you! Your message has been received."
                 )
 
-                st.info(
-                    "For direct assistance: 03169707804"
-                )
-
 
 # ============================================================
 # ADMIN
 # ============================================================
 
-elif st.session_state.page == "Admin"),:,
+elif st.session_state.page == "Admin":
 
-    st.header(
-        "🔐 Admin Dashboard"
-    )
+    st.header("🔐 Admin Dashboard")
 
     if not st.session_state.admin_logged_in:
 
@@ -1958,60 +1674,43 @@ elif st.session_state.page == "Admin"),:,
 
         admin_email = st.text_input(
             "Admin Email",
-            key="admin_email"
+            key="admin_email",
         )
 
         admin_password = st.text_input(
             "Password",
             type="password",
-            key="admin_password"
+            key="admin_password",
         )
 
         if st.button(
             "LOGIN",
             use_container_width=True,
-            key="admin_login"
+            key="admin_login",
         ):
 
             try:
 
-                result = (
-                    supabase
-                    .auth
-                    .sign_in_with_password(
-                        {
-                            "email":
-                                admin_email.strip(),
-
-                            "password":
-                                admin_password
-                        }
-                    )
+                result = supabase.auth.sign_in_with_password(
+                    {
+                        "email": admin_email.strip(),
+                        "password": admin_password,
+                    }
                 )
 
                 if result.user is None:
 
-                    st.error(
-                        "Login failed."
-                    )
+                    st.error("Login failed.")
 
                 else:
 
-                    logged_email = (
-                        result.user.email or ""
-                    )
+                    logged_email = result.user.email or ""
 
-                    if (
-                        logged_email.lower()
-                        != ADMIN_EMAIL.lower()
-                    ):
+                    if logged_email.lower() != ADMIN_EMAIL.lower():
 
                         try:
-
                             supabase.auth.sign_out()
-
                         except Exception:
-
                             pass
 
                         st.error(
@@ -2030,13 +1729,8 @@ elif st.session_state.page == "Admin"),:,
 
             except Exception as e:
 
-                st.error(
-                    "Login failed."
-                )
-
-                st.code(
-                    str(e)
-                )
+                st.error("Login failed.")
+                st.code(str(e))
 
     else:
 
@@ -2047,16 +1741,13 @@ elif st.session_state.page == "Admin"),:,
         if st.button(
             "LOGOUT",
             use_container_width=True,
-            key="admin_logout"
+            key="admin_logout",
         ):
-
             logout_admin()
 
         st.divider()
 
-        st.subheader(
-            "📦 Customer Orders"
-        )
+        st.subheader("📦 Customer Orders")
 
         try:
 
@@ -2064,10 +1755,7 @@ elif st.session_state.page == "Admin"),:,
                 supabase
                 .table("orders")
                 .select("*")
-                .order(
-                    "created_at",
-                    desc=True
-                )
+                .order("created_at", desc=True)
                 .execute()
             )
 
@@ -2075,29 +1763,24 @@ elif st.session_state.page == "Admin"),:,
 
             if not orders:
 
-                st.info(
-                    "No orders received yet."
-                )
+                st.info("No orders received yet.")
 
             else:
 
                 st.metric(
                     "Total Orders",
-                    len(orders)
+                    len(orders),
                 )
 
                 st.divider()
 
                 for order in orders:
 
-                    order_id = order.get(
-                        "id",
-                        "N/A"
-                    )
+                    order_id = order.get("id", "N/A")
 
                     customer_name = order.get(
                         "customer_name",
-                        ""
+                        "",
                     )
 
                     with st.expander(
@@ -2105,8 +1788,7 @@ elif st.session_state.page == "Admin"),:,
                     ):
 
                         st.write(
-                            f"**Customer:** "
-                            f"{customer_name}"
+                            f"**Customer:** {customer_name}"
                         )
 
                         st.write(
@@ -2131,9 +1813,7 @@ elif st.session_state.page == "Admin"),:,
 
                         st.divider()
 
-                        st.write(
-                            "**Order Items:**"
-                        )
+                        st.write("**Order Items:**")
 
                         try:
 
@@ -2143,14 +1823,13 @@ elif st.session_state.page == "Admin"),:,
                                 .select("*")
                                 .eq(
                                     "order_id",
-                                    order_id
+                                    order_id,
                                 )
                                 .execute()
                             )
 
                             items = (
-                                items_response.data
-                                or []
+                                items_response.data or []
                             )
 
                             if items:
@@ -2175,11 +1854,7 @@ elif st.session_state.page == "Admin"),:,
                         except Exception as e:
 
                             st.error(
-                                "Unable to load order items."
-                            )
-
-                            st.code(
-                                str(e)
+                                f"Unable to load order items: {e}"
                             )
 
         except Exception as e:
@@ -2188,41 +1863,5 @@ elif st.session_state.page == "Admin"),:,
                 "Unable to load customer orders."
             )
 
-            st.code(
-                str(e)
-            )
-# ============================================================
-# FOOTER
-# ============================================================
-
-st.divider()
-
-footer1, footer2, footer3 = st.columns(3)
-
-with footer1:
-
-    st.caption(
-        "🛍️ LuxeMart"
-    )
-
-with footer2:
-
-    st.caption(
-        "Luxury • Style • Elegance"
-    )
-
-with footer3:
-
-    st.caption(
-        "📞 03169707804"
-    )
-
-st.caption(
-    "📧 asyabibi485@gmail.com"
-)
-
-st.caption(
-    "© LuxeMart • All Rights Reserved"
-)
-
-
+            st.code(str(e))
+            
